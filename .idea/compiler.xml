@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="w1" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="inclass" target="1.8" />
+      <module name="junit-tests (1)" target="1.8" />
+      <module name="untitled" target="1.8" />
+      <module name="week1" target="25" />
+      <module name="week1-Junit-Tests" target="1.8" />
+      <module name="week4-inclass" target="1.8" />
+      <module name="week6-speed" target="1.8" />
+      <module name="week6-speed2" target="1.8" />
+      <module name="week7-inclass" target="21" />
+      <module name="weekinclass" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="w1" options="" />
+    </option>
+  </component>
+</project>
