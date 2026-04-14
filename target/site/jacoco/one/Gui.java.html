@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gui.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">w1</a> &gt; <a href="index.source.html" class="el_package">one</a> &gt; <span class="el_source">Gui.java</span></div><h1>Gui.java</h1><pre class="source lang-java linenums">package one;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+
+<span class="nc" id="L11">public class Gui extends Application {</span>
+
+<span class="nc" id="L13">    private final MariaDbConnection dbConnection = new MariaDbConnection();</span>
+<span class="nc" id="L14">    private final HelperClass helper = new HelperClass(dbConnection);</span>
+<span class="nc" id="L15">    private final ShoppingCart shoppingCart = new ShoppingCart();</span>
+<span class="nc" id="L16">    private final CartService cartService = new CartService(dbConnection);</span>
+
+<span class="nc" id="L18">    private TextField nameField = new TextField();</span>
+<span class="nc" id="L19">    private TextField priceField = new TextField();</span>
+<span class="nc" id="L20">    private TextField quantityField = new TextField();</span>
+
+<span class="nc" id="L22">    private Button getResult = new Button();</span>
+<span class="nc" id="L23">    private Button addItem = new Button();</span>
+<span class="nc" id="L24">    private Button displayButton = new Button();</span>
+
+<span class="nc" id="L26">    private Label name = new Label();</span>
+<span class="nc" id="L27">    private Label price = new Label();</span>
+<span class="nc" id="L28">    private Label quantity = new Label();</span>
+<span class="nc" id="L29">    private Label addedLabel = new Label();</span>
+<span class="nc" id="L30">    private Label resultLabel = new Label(&quot;&quot;);</span>
+
+    private void updateUI() {
+<span class="nc" id="L33">        nameField.setPromptText(helper.getMessage(&quot;prompt.itemName&quot;));</span>
+<span class="nc" id="L34">        priceField.setPromptText(helper.getMessage(&quot;prompt.itemPrice&quot;));</span>
+<span class="nc" id="L35">        quantityField.setPromptText(helper.getMessage(&quot;prompt.itemQuantity&quot;));</span>
+
+<span class="nc" id="L37">        getResult.setText(helper.getMessage(&quot;total.bill&quot;));</span>
+<span class="nc" id="L38">        displayButton.setText(helper.getMessage(&quot;prompt.displayButton&quot;));</span>
+<span class="nc" id="L39">        addItem.setText(helper.getMessage(&quot;prompt.addItem&quot;));</span>
+
+<span class="nc" id="L41">        name.setText(helper.getMessage(&quot;field.name&quot;));</span>
+<span class="nc" id="L42">        price.setText(helper.getMessage(&quot;field.price&quot;));</span>
+<span class="nc" id="L43">        quantity.setText(helper.getMessage(&quot;field.quantity&quot;));</span>
+
+<span class="nc" id="L45">        addedLabel.setText(&quot;&quot;); // reset message</span>
+<span class="nc" id="L46">    }</span>
+
+    @Override
+    public void start(Stage primaryStage) {
+
+<span class="nc" id="L51">        HBox langBar = createLanguageBar();</span>
+
+<span class="nc" id="L53">        GridPane grid = new GridPane();</span>
+<span class="nc" id="L54">        grid.setHgap(10);</span>
+<span class="nc" id="L55">        grid.setVgap(10);</span>
+<span class="nc" id="L56">        grid.setPadding(new Insets(16));</span>
+
+<span class="nc" id="L58">        ColumnConstraints labelCol = new ColumnConstraints(90);</span>
+<span class="nc" id="L59">        ColumnConstraints fieldCol = new ColumnConstraints();</span>
+<span class="nc" id="L60">        fieldCol.setHgrow(Priority.ALWAYS);</span>
+<span class="nc" id="L61">        grid.getColumnConstraints().addAll(labelCol, fieldCol);</span>
+
+        // Input validation
+<span class="nc" id="L64">        priceField</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                .setTextFormatter(new TextFormatter&lt;&gt;(c -&gt; c.getControlNewText().matches(&quot;\\d*(\\.\\d*)?&quot;) ? c : null));</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        quantityField.setTextFormatter(new TextFormatter&lt;&gt;(c -&gt; c.getControlNewText().matches(&quot;\\d*&quot;) ? c : null));</span>
+
+<span class="nc" id="L68">        grid.add(name, 0, 0);</span>
+<span class="nc" id="L69">        grid.add(price, 0, 1);</span>
+<span class="nc" id="L70">        grid.add(quantity, 0, 2);</span>
+<span class="nc" id="L71">        grid.add(nameField, 1, 0);</span>
+<span class="nc" id="L72">        grid.add(priceField, 1, 1);</span>
+<span class="nc" id="L73">        grid.add(quantityField, 1, 2);</span>
+
+        // 🎨 Input style
+<span class="nc" id="L76">        String fieldStyle = &quot;-fx-background-color: #f9fafb;&quot; +</span>
+                &quot;-fx-border-color: #d1d5db;&quot; +
+                &quot;-fx-border-radius: 8;&quot; +
+                &quot;-fx-background-radius: 8;&quot; +
+                &quot;-fx-padding: 6 10;&quot; +
+                &quot;-fx-font-size: 13;&quot;;
+
+<span class="nc" id="L83">        nameField.setStyle(fieldStyle);</span>
+<span class="nc" id="L84">        priceField.setStyle(fieldStyle);</span>
+<span class="nc" id="L85">        quantityField.setStyle(fieldStyle);</span>
+
+        // 🎨 Buttons
+<span class="nc" id="L88">        addItem.setStyle(&quot;-fx-background-color: #2563eb; -fx-text-fill: white; -fx-background-radius: 10;&quot;);</span>
+<span class="nc" id="L89">        getResult.setStyle(&quot;-fx-background-color: #1d4ed8; -fx-text-fill: white; -fx-background-radius: 10;&quot;);</span>
+<span class="nc" id="L90">        displayButton.setStyle(&quot;-fx-background-color: #16a34a; -fx-text-fill: white; -fx-background-radius: 10;&quot;);</span>
+
+<span class="nc" id="L92">        addedLabel.setStyle(&quot;-fx-text-fill: #16a34a; -fx-font-weight: bold;&quot;);</span>
+<span class="nc" id="L93">        resultLabel.setStyle(&quot;-fx-text-fill: #111827; -fx-font-size: 14; -fx-font-weight: bold;&quot;);</span>
+
+        // ➕ Add item action
+<span class="nc" id="L96">        addItem.setOnAction(e -&gt; {</span>
+            try {
+<span class="nc" id="L98">                String itemName = nameField.getText();</span>
+<span class="nc" id="L99">                double priceVal = Double.parseDouble(priceField.getText());</span>
+<span class="nc" id="L100">                int qty = Integer.parseInt(quantityField.getText());</span>
+
+<span class="nc" id="L102">                shoppingCart.addItem(itemName, new Item(priceVal, qty));</span>
+
+<span class="nc" id="L104">                addedLabel.setText(helper.getMessage(&quot;prompt.itemAdded&quot;));</span>
+
+<span class="nc" id="L106">                nameField.clear();</span>
+<span class="nc" id="L107">                priceField.clear();</span>
+<span class="nc" id="L108">                quantityField.clear();</span>
+
+<span class="nc" id="L110">            } catch (Exception ex) {</span>
+<span class="nc" id="L111">                addedLabel.setText(&quot;Invalid input!&quot;);</span>
+<span class="nc" id="L112">            }</span>
+<span class="nc" id="L113">        });</span>
+
+        // 💰 Total button
+<span class="nc" id="L116">        getResult.setOnAction(e -&gt; {</span>
+<span class="nc" id="L117">            resultLabel.setText(</span>
+<span class="nc" id="L118">                    helper.getMessage(&quot;total.bill&quot;) + shoppingCart.getTotalBill());</span>
+<span class="nc" id="L119">            cartService.saveCart(shoppingCart, helper.getCurrentLocale());</span>
+<span class="nc" id="L120">        });</span>
+
+        // 📋 Display items
+<span class="nc" id="L123">        displayButton.setOnAction(e -&gt; resultLabel.setText(shoppingCart.displayBill()));</span>
+
+<span class="nc" id="L125">        HBox addRow = new HBox(10, addItem, addedLabel);</span>
+<span class="nc" id="L126">        addRow.setAlignment(Pos.CENTER_LEFT);</span>
+<span class="nc" id="L127">        addRow.setPadding(new Insets(0, 16, 8, 16));</span>
+
+<span class="nc" id="L129">        HBox buttonRow = new HBox(10, getResult, displayButton);</span>
+<span class="nc" id="L130">        buttonRow.setPadding(new Insets(0, 16, 8, 16));</span>
+
+<span class="nc" id="L132">        HBox resultRow = new HBox(resultLabel);</span>
+<span class="nc" id="L133">        resultRow.setPadding(new Insets(0, 16, 12, 16));</span>
+
+<span class="nc" id="L135">        updateUI();</span>
+
+<span class="nc" id="L137">        VBox card = new VBox(grid, addRow, buttonRow, resultRow);</span>
+<span class="nc" id="L138">        card.setSpacing(12);</span>
+<span class="nc" id="L139">        card.setPadding(new Insets(16));</span>
+<span class="nc" id="L140">        card.setStyle(</span>
+                &quot;-fx-background-color: white;&quot; +
+                        &quot;-fx-background-radius: 16;&quot; +
+                        &quot;-fx-border-radius: 16;&quot; +
+                        &quot;-fx-border-color: #e0e0e0;&quot; +
+                        &quot;-fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 15, 0, 0, 4);&quot;);
+
+<span class="nc" id="L147">        VBox root = new VBox(langBar, card);</span>
+<span class="nc" id="L148">        root.setSpacing(14);</span>
+<span class="nc" id="L149">        root.setPadding(new Insets(16));</span>
+<span class="nc" id="L150">        root.setStyle(</span>
+                &quot;-fx-background-color: linear-gradient(to bottom, #f5f7fa, #e4e8eb);&quot; +
+                        &quot;-fx-font-family: 'Segoe UI';&quot;);
+
+<span class="nc" id="L154">        Scene scene = new Scene(root, 450, 380);</span>
+<span class="nc" id="L155">        primaryStage.setScene(scene);</span>
+<span class="nc" id="L156">        primaryStage.setTitle(&quot;Shopping Cart&quot;);</span>
+<span class="nc" id="L157">        primaryStage.show();</span>
+<span class="nc" id="L158">    }</span>
+
+    private HBox createLanguageBar() {
+<span class="nc" id="L161">        Button en = new Button(&quot;EN&quot;);</span>
+<span class="nc" id="L162">        Button fi = new Button(&quot;FI&quot;);</span>
+<span class="nc" id="L163">        Button sv = new Button(&quot;SV&quot;);</span>
+<span class="nc" id="L164">        Button ja = new Button(&quot;JP&quot;);</span>
+<span class="nc" id="L165">        Button ur = new Button(&quot;UR&quot;);</span>
+<span class="nc" id="L166">        Button ne = new Button(&quot;NE&quot;);</span>
+
+<span class="nc" id="L168">        String style = &quot;-fx-background-color: #374151;&quot; +</span>
+                &quot;-fx-text-fill: white;&quot; +
+                &quot;-fx-background-radius: 8;&quot; +
+                &quot;-fx-padding: 6 10;&quot;;
+
+<span class="nc" id="L173">        en.setStyle(style);</span>
+<span class="nc" id="L174">        fi.setStyle(style);</span>
+<span class="nc" id="L175">        sv.setStyle(style);</span>
+<span class="nc" id="L176">        ja.setStyle(style);</span>
+<span class="nc" id="L177">        ur.setStyle(style);</span>
+<span class="nc" id="L178">        ne.setStyle(style);</span>
+
+<span class="nc" id="L180">        en.setOnAction(e -&gt; switchLang(&quot;en&quot;));</span>
+<span class="nc" id="L181">        fi.setOnAction(e -&gt; switchLang(&quot;fi&quot;));</span>
+<span class="nc" id="L182">        sv.setOnAction(e -&gt; switchLang(&quot;sv&quot;));</span>
+<span class="nc" id="L183">        ja.setOnAction(e -&gt; switchLang(&quot;ja&quot;));</span>
+<span class="nc" id="L184">        ur.setOnAction(e -&gt; switchLang(&quot;ur&quot;));</span>
+<span class="nc" id="L185">        ne.setOnAction(e -&gt; switchLang(&quot;ne&quot;));</span>
+
+<span class="nc" id="L187">        HBox bar = new HBox(10, en, fi, sv, ja, ur, ne);</span>
+<span class="nc" id="L188">        bar.setPadding(new Insets(10));</span>
+<span class="nc" id="L189">        bar.setStyle(&quot;-fx-background-color: #1f2937; -fx-background-radius: 12;&quot;);</span>
+<span class="nc" id="L190">        return bar;</span>
+    }
+
+    private void switchLang(String lang) {
+<span class="nc" id="L194">        helper.setLocale(lang);</span>
+<span class="nc" id="L195">        updateUI();</span>
+<span class="nc" id="L196">    }</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L199">        launch(args);</span>
+<span class="nc" id="L200">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

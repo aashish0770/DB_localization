@@ -1,1 +1,7 @@
+tests\HelperClassTest.class
+tests\ShoppingCartTest.class
 TestClass.class
+tests\CartServiceTest.class
+tests\MariaDbConnectionTest.class
+tests\LocalizationServiceTests.class
+tests\LocalTest.class

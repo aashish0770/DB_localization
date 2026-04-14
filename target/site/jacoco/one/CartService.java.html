@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CartService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">w1</a> &gt; <a href="index.source.html" class="el_package">one</a> &gt; <span class="el_source">CartService.java</span></div><h1>CartService.java</h1><pre class="source lang-java linenums">package one;
+
+import java.sql.*;
+import java.util.Map;
+
+public class CartService {
+
+    private MariaDbConnection dbConnection;
+
+<span class="fc" id="L10">    public CartService(MariaDbConnection dbConnection) {</span>
+<span class="fc" id="L11">        this.dbConnection = dbConnection;</span>
+<span class="fc" id="L12">    }</span>
+
+    public void saveCart(ShoppingCart cart, String language) {
+<span class="fc" id="L15">        try (Connection conn = dbConnection.getConnection()) {</span>
+<span class="fc" id="L16">            int cartRecordId = saveCart(conn, cart.getItems().size(), cart.getTotalBill(), language);</span>
+
+<span class="fc bfc" id="L18" title="All 2 branches covered.">            for (Map.Entry&lt;String, Item&gt; entry : cart.getItems().entrySet()) {</span>
+<span class="fc" id="L19">                saveItem(conn, entry.getKey(), cartRecordId, entry.getValue());</span>
+<span class="fc" id="L20">            }</span>
+<span class="nc" id="L21">        } catch (SQLException e) {</span>
+<span class="nc" id="L22">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L23">            System.out.println(&quot;Something went wrong&quot;);</span>
+<span class="fc" id="L24">        }</span>
+<span class="fc" id="L25">    }</span>
+
+
+    private int saveCart(Connection conn, int totalItems, double totalCost, String language) {
+<span class="fc" id="L29">        String sql = &quot;INSERT INTO cart_items (total_items, total_cost, language) VALUES (?, ?, ?)&quot;;</span>
+<span class="fc" id="L30">        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {</span>
+<span class="fc" id="L31">            stmt.setInt(1, totalItems);</span>
+<span class="fc" id="L32">            stmt.setDouble(2, totalCost);</span>
+<span class="fc" id="L33">            stmt.setString(3, language);</span>
+<span class="fc" id="L34">            stmt.executeUpdate();</span>
+<span class="fc" id="L35">            ResultSet rs = stmt.getGeneratedKeys();</span>
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">            if (rs.next()) return rs.getInt(1);</span>
+<span class="pc bpc" id="L37" title="1 of 2 branches missed.">        } catch (SQLException e) {</span>
+<span class="nc" id="L38">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L39">            System.out.println(&quot;Failed to persist data in the cart record table.&quot;);</span>
+<span class="nc" id="L40">        }</span>
+<span class="nc" id="L41">        return -1;</span>
+    }
+
+
+    private void saveItem(Connection conn, String name, int cartRecordId, Item item) throws SQLException {
+<span class="fc" id="L46">        String sql = &quot;INSERT INTO items (cart_items_id, name, price, quantity, subtotal) VALUES (?, ?, ?, ?, ?)&quot;;</span>
+<span class="fc" id="L47">        try (PreparedStatement st = conn.prepareStatement(sql)) {</span>
+<span class="fc" id="L48">            st.setInt(1, cartRecordId);</span>
+<span class="fc" id="L49">            st.setString(2, name);</span>
+<span class="fc" id="L50">            st.setDouble(3, item.getPrice());</span>
+<span class="fc" id="L51">            st.setInt(4, item.getQuantity());</span>
+<span class="fc" id="L52">            st.setDouble(5, item.getTotal());</span>
+<span class="fc" id="L53">            st.executeUpdate();</span>
+<span class="nc" id="L54">        } catch (SQLException e) {</span>
+<span class="nc" id="L55">            System.out.println(e.getMessage());</span>
+<span class="nc" id="L56">            System.out.println(&quot;Could not persist data in the Item table&quot;);</span>
+<span class="fc" id="L57">        }</span>
+<span class="fc" id="L58">    }</span>
+
+
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
