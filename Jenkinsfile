@@ -43,6 +43,16 @@ pipeline {
             }
         }
 
+        stage('SonarQube Analysis') {
+             steps {
+                withSonarQubeEnv('SonarQubeServer') {
+                     withCredentials([string(credentialsId: 'sonar-qube', variable: 'SONAR_TOKEN')]) {
+                        bat 'mvn sonar:sonar -Dsonar.token=%SONAR_TOKEN%'
+                    }
+                }
+            }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
